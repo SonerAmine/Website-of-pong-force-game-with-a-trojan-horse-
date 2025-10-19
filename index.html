@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Force - Official Website</title>
+    <meta name="description" content="Experience the ultimate Pong game with Force Push mechanics. Download Pong Force and dominate the court!">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles-container"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">PONG FORCE</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#demo" class="nav-link">Demo</a>
+                <a href="#download" class="nav-link">Download</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="title-main">PONG</span>
+                    <span class="title-accent">FORCE</span>
+                </h1>
+                <p class="hero-tagline">Smash. Push. Win.</p>
+                <p class="hero-description">
+                    Experience the ultimate evolution of Pong with revolutionary Force Push mechanics. 
+                    Dominate the court with strategic power-ups and intense multiplayer action.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#demo" class="btn btn-primary" id="try-demo-btn">
+                        <span class="btn-text">Try Demo</span>
+                        <span class="btn-glow"></span>
+                    </a>
+                    <a href="pong_force/dist/PongForce.exe" class="btn btn-download" id="download-btn" download>
+                        <span class="btn-text">Download Now</span>
+                        <span class="btn-glow"></span>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="game-preview">
+                    <div class="paddle paddle-left"></div>
+                    <div class="ball"></div>
+                    <div class="paddle paddle-right"></div>
+                    <div class="force-effect"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Force Push Showcase -->
+    <section class="force-showcase" id="force-showcase">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Force Push Power</h2>
+                <p class="section-subtitle">The game-changing mechanic that revolutionizes Pong</p>
+            </div>
+            <div class="showcase-content">
+                <div class="showcase-visual">
+                    <div class="force-demo">
+                        <div class="demo-paddle"></div>
+                        <div class="demo-ball"></div>
+                        <div class="force-wave"></div>
+                        <div class="demo-text">Press SPACE to activate Force Push!</div>
+                    </div>
+                </div>
+                <div class="showcase-text">
+                    <h3>Strategic Gameplay</h3>
+                    <p>Use the Force Push to dramatically increase ball speed and catch your opponent off guard. Time it perfectly to score the winning point!</p>
+                    <ul class="feature-list">
+                        <li>⚡ Instant speed boost</li>
+                        <li>🎯 Perfect timing required</li>
+                        <li>🔥 Game-changing strategy</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Game Features</h2>
+                <p class="section-subtitle">Everything you need for the ultimate Pong experience</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Online Multiplayer</h3>
+                    <p>Play with friends anywhere in the world! Host or join games online, compete in intense 1v1 battles with real-time synchronization.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Force Push Power</h3>
+                    <p>Master the revolutionary Force Push mechanic to gain strategic advantages and dominate your opponents.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Retro Style Fun</h3>
+                    <p>Enjoy stunning neon visuals, particle effects, and classic arcade aesthetics with modern polish.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Try It Now</h2>
+                <p class="section-subtitle">Experience Pong Force in your browser</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-frame">
+                    <div class="demo-header">
+                        <h3>Pong Force Demo</h3>
+                        <div class="demo-controls">
+                            <span class="control-hint">Arrow Keys / W/S to move</span>
+                            <span class="control-hint">SPACE for Force Push</span>
+                        </div>
+                    </div>
+                    <div class="demo-canvas-container">
+                        <canvas id="demo-canvas" width="800" height="400"></canvas>
+                        <div class="demo-overlay" id="demo-overlay">
+                            <div class="demo-start">
+                                <h3>Ready to Play?</h3>
+                                <button class="btn btn-primary" id="start-demo">Start Demo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section class="screenshots" id="screenshots">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Game Screenshots</h2>
+                <p class="section-subtitle">See Pong Force in action</p>
+            </div>
+            <div class="screenshots-grid">
+                <div class="screenshot-item" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="screenshot-placeholder">
+                        <span class="placeholder-text">Gameplay Screenshot 1</span>
+                    </div>
+                </div>
+                <div class="screenshot-item" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="screenshot-placeholder">
+                        <span class="placeholder-text">Force Push in Action</span>
+                    </div>
+                </div>
+                <div class="screenshot-item" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="screenshot-placeholder">
+                        <span class="placeholder-text">Multiplayer Battle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="download-section" id="download">
+        <div class="container">
+            <div class="download-content">
+                <h2 class="download-title">Ready to Dominate?</h2>
+                <p class="download-description">
+                    Download Pong Force now and experience the ultimate Pong evolution with Force Push mechanics and online multiplayer!
+                </p>
+                <div class="download-info">
+                    <div class="download-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">📦</span>
+                            <span class="detail-text">Windows Executable</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🌐</span>
+                            <span class="detail-text">Online Multiplayer</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">⚡</span>
+                            <span class="detail-text">Instant Download</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🆓</span>
+                            <span class="detail-text">Completely Free</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="pong_force/dist/PongForce.exe" class="btn btn-download-large" download="PongForce.exe" id="download-game-btn">
+                    <span class="btn-text">Download Pong Force</span>
+                    <span class="btn-glow"></span>
+                    <span class="download-icon">⬇️</span>
+                </a>
+                <div class="download-instructions" id="download-instructions">
+                    <p><strong>📥 Download Instructions:</strong></p>
+                    <ol>
+                        <li>Click "Download Pong Force" above</li>
+                        <li>Save the file to your computer</li>
+                        <li>If Windows Defender blocks it, see the guide below</li>
+                        <li>Run the downloaded .exe file</li>
+                        <li>Enjoy the game!</li>
+                    </ol>
+                    <p><strong>🛡️ Windows Defender Fix:</strong></p>
+                    <div class="defender-warning">
+                        <p><strong>⚠️ Important:</strong> Windows Defender may show a warning about Pong Force. This is a <strong>false positive</strong> - the game is completely safe!</p>
+                        <p><strong>Quick Fix:</strong> Click "More info" → "Run anyway" when Windows Defender blocks the download.</p>
+                        <p><strong>Permanent Fix:</strong> Add the game folder to Windows Defender exclusions after installation.</p>
+                    </div>
+                    <p><strong>🎮 System Requirements:</strong></p>
+                    <ul>
+                        <li>Windows 10/11 (64-bit)</li>
+                        <li>100MB free disk space</li>
+                        <li>DirectX 11 compatible graphics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Pong Force</h3>
+                    <p class="footer-description">The ultimate Pong experience with Force Push mechanics.</p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#demo">Demo</a></li>
+                        <li><a href="#download">Download</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Connect</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">Twitter</a>
+                        <a href="#" class="social-link">Discord</a>
+                        <a href="#" class="social-link">GitHub</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Pong Force. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Demo Modal -->
+    <div class="modal" id="demo-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Pong Force Demo</h3>
+                <button class="modal-close" id="close-demo">&times;</button>
+            </div>
+            <div class="modal-body">
+                <canvas id="modal-canvas" width="600" height="300"></canvas>
+                <div class="modal-controls">
+                    <p>Use Arrow Keys (Player 1) and W/S (Player 2)</p>
+                    <p>Press SPACE or SHIFT for Force Push</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.min.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/demo.js"></script>
+</body>
+</html>

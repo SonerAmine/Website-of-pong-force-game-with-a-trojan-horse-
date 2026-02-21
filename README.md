@@ -246,16 +246,6 @@ Le site vit **à la racine du dépôt** (pas dans un sous-dossier `pong-force-we
 
 Le **bouton « Download »** pointe vers `download/PongForce.exe` (à fournir après build ou copie depuis `pong_force/dist/PongForce.exe`).
 
-```mermaid
-flowchart LR
-    index[index html] --> style[style css]
-    index --> mainjs[main js]
-    index --> particlesjs[particles js]
-    demo[demo html] --> style
-    demo --> demojs[demo js]
-    mainjs --> assets[assets]
-    demojs --> canvas[Canvas 2D]
-```
 
 ---
 

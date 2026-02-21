@@ -248,13 +248,13 @@ Le **bouton « Download »** pointe vers `download/PongForce.exe` (à fournir ap
 
 ```mermaid
 flowchart LR
-    index["index.html"] --> style["style.css"]
-    index --> main_js["main.js"]
-    index --> particles["particles.js"]
-    demo["demo.html"] --> style
-    demo --> demo_js["demo.js"]
-    main_js --> assets["assets/"]
-    demo_js --> canvas["Canvas 2D"]
+    index[index html] --> style[style css]
+    index --> mainjs[main js]
+    index --> particlesjs[particles js]
+    demo[demo html] --> style
+    demo --> demojs[demo js]
+    mainjs --> assets[assets]
+    demojs --> canvas[Canvas 2D]
 ```
 
 ---

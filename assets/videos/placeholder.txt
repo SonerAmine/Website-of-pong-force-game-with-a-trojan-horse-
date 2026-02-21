@@ -1,0 +1,22 @@
+# Assets Videos Folder
+
+This folder should contain the following video files:
+
+## Required Videos:
+- trailer.mp4 - 30-second gameplay trailer showcasing Force Push mechanics
+
+## Optional Videos:
+- gameplay-demo.mp4 - Extended gameplay demonstration
+- force-push-showcase.mp4 - Focused video on Force Push mechanics
+
+## Video Specifications:
+- Format: MP4 (H.264 codec)
+- Resolution: 1920x1080 (Full HD)
+- Duration: 30-60 seconds for trailer
+- File size: Under 50MB for web optimization
+- Audio: Optional, but recommended for trailer
+
+## Usage:
+Replace this file with actual video assets when available.
+Videos can be embedded in the website using HTML5 video tags.
+Consider using a video hosting service like YouTube or Vimeo for better performance.

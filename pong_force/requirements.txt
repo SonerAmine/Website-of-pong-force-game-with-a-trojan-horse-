@@ -1,0 +1,20 @@
+# Pong Force - Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core Game Dependencies
+pygame>=2.5.0
+
+# Networking & Matchmaking
+Flask>=3.0.0
+Flask-CORS>=4.0.0
+requests>=2.31.0
+
+# For server deployment (Render/Heroku)
+gunicorn>=21.2.0
+
+# Optional but recommended
+# For better performance on Windows
+pywin32>=306; platform_system=="Windows"
+
+# For packaging the game
+pyinstaller>=6.0.0

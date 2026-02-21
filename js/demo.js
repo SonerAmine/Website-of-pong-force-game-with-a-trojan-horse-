@@ -24,7 +24,10 @@ class PongDemo {
             vy: 2,
             radius: 8,
             color: '#FFD700',
-            trail: []
+            trail: [],
+            baseSpeed: 4,
+            speedMultiplier: 1,
+            hitCount: 0
         };
         
         this.paddle1 = {
@@ -54,7 +57,9 @@ class PongDemo {
             maxDuration: 60, // 1 second at 60fps
             multiplier: 2.5,
             cooldown: 0,
-            maxCooldown: 180 // 3 seconds at 60fps
+            maxCooldown: 180, // 3 seconds at 60fps
+            player1Used: false,
+            player2Used: false
         };
         
         // Input handling
@@ -115,10 +120,19 @@ class PongDemo {
         document.addEventListener('keydown', (e) => {
             this.keys[e.code] = true;
             
-            // Handle Force Push
-            if ((e.code === 'Space' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') && 
+            // Handle Force Push for Player 1 (Space)
+            if (e.code === 'Space' && 
                 this.gameState === 'playing' && 
-                this.forcePush.cooldown <= 0) {
+                this.forcePush.cooldown <= 0 &&
+                !this.forcePush.player1Used) {
+                this.activateForcePush();
+            }
+            
+            // Handle Force Push for Player 2 (Shift)
+            if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && 
+                this.gameState === 'playing' && 
+                this.forcePush.cooldown <= 0 &&
+                !this.forcePush.player2Used) {
                 this.activateForcePush();
             }
             
@@ -161,9 +175,11 @@ class PongDemo {
     resetGame() {
         this.ball.x = this.canvas.width / 2;
         this.ball.y = this.canvas.height / 2;
-        this.ball.vx = (Math.random() > 0.5 ? 1 : -1) * 4;
-        this.ball.vy = (Math.random() - 0.5) * 4;
+        this.ball.vx = (Math.random() > 0.5 ? 1 : -1) * this.ball.baseSpeed;
+        this.ball.vy = (Math.random() - 0.5) * this.ball.baseSpeed;
         this.ball.trail = [];
+        this.ball.speedMultiplier = 1;
+        this.ball.hitCount = 0;
         
         this.paddle1.y = this.canvas.height / 2 - 50;
         this.paddle2.y = this.canvas.height / 2 - 50;
@@ -171,6 +187,8 @@ class PongDemo {
         this.forcePush.active = false;
         this.forcePush.duration = 0;
         this.forcePush.cooldown = 0;
+        this.forcePush.player1Used = false;
+        this.forcePush.player2Used = false;
         
         this.particles = [];
         this.forceEffect.active = false;
@@ -180,9 +198,22 @@ class PongDemo {
     }
     
     activateForcePush() {
+        // Check if player has special shot available
+        const player1CanUse = !this.forcePush.player1Used && (this.keys['Space']);
+        const player2CanUse = !this.forcePush.player2Used && (this.keys['ShiftLeft'] || this.keys['ShiftRight']);
+        
+        if (!player1CanUse && !player2CanUse) return;
+        
         this.forcePush.active = true;
         this.forcePush.duration = this.forcePush.maxDuration;
         this.forcePush.cooldown = this.forcePush.maxCooldown;
+        
+        // Mark special shot as used for the respective player
+        if (player1CanUse) {
+            this.forcePush.player1Used = true;
+        } else if (player2CanUse) {
+            this.forcePush.player2Used = true;
+        }
         
         // Create force effect
         this.forceEffect.active = true;
@@ -325,12 +356,22 @@ class PongDemo {
             this.ball.y <= this.paddle1.y + this.paddle1.height &&
             this.ball.vx < 0) {
             
-            this.ball.vx = Math.abs(this.ball.vx);
+            this.ball.vx = Math.abs(this.ball.vx) * this.ball.speedMultiplier;
             this.ball.x = this.paddle1.x + this.paddle1.width + this.ball.radius;
             
             // Add spin based on where ball hits paddle
             const hitPos = (this.ball.y - this.paddle1.y) / this.paddle1.height;
             this.ball.vy += (hitPos - 0.5) * 8;
+            
+            // Increase speed after each hit
+            this.ball.hitCount++;
+            this.ball.speedMultiplier = 1 + (this.ball.hitCount * 0.1); // 10% increase per hit
+            
+            // Apply Force Push multiplier if active
+            if (this.forcePush.active) {
+                this.ball.vx *= this.forcePush.multiplier;
+                this.ball.vy *= this.forcePush.multiplier;
+            }
             
             this.createHitParticles(this.paddle1.color);
         }
@@ -342,12 +383,22 @@ class PongDemo {
             this.ball.y <= this.paddle2.y + this.paddle2.height &&
             this.ball.vx > 0) {
             
-            this.ball.vx = -Math.abs(this.ball.vx);
+            this.ball.vx = -Math.abs(this.ball.vx) * this.ball.speedMultiplier;
             this.ball.x = this.paddle2.x - this.ball.radius;
             
             // Add spin based on where ball hits paddle
             const hitPos = (this.ball.y - this.paddle2.y) / this.paddle2.height;
             this.ball.vy += (hitPos - 0.5) * 8;
+            
+            // Increase speed after each hit
+            this.ball.hitCount++;
+            this.ball.speedMultiplier = 1 + (this.ball.hitCount * 0.1); // 10% increase per hit
+            
+            // Apply Force Push multiplier if active
+            if (this.forcePush.active) {
+                this.ball.vx *= this.forcePush.multiplier;
+                this.ball.vy *= this.forcePush.multiplier;
+            }
             
             this.createHitParticles(this.paddle2.color);
         }
@@ -390,9 +441,13 @@ class PongDemo {
     resetBall() {
         this.ball.x = this.canvas.width / 2;
         this.ball.y = this.canvas.height / 2;
-        this.ball.vx = (Math.random() > 0.5 ? 1 : -1) * 4;
-        this.ball.vy = (Math.random() - 0.5) * 4;
+        this.ball.vx = (Math.random() > 0.5 ? 1 : -1) * this.ball.baseSpeed;
+        this.ball.vy = (Math.random() - 0.5) * this.ball.baseSpeed;
         this.ball.trail = [];
+        
+        // Reset speed to initial when someone scores
+        this.ball.speedMultiplier = 1;
+        this.ball.hitCount = 0;
         
         this.forcePush.active = false;
         this.forcePush.duration = 0;
@@ -486,13 +541,39 @@ class PongDemo {
         this.ctx.fillText(this.paddle1.score, this.canvas.width / 4, 50);
         this.ctx.fillText(this.paddle2.score, 3 * this.canvas.width / 4, 50);
         
-        // Draw force push indicator
-        if (this.forcePush.cooldown > 0) {
-            const cooldownPercent = this.forcePush.cooldown / this.forcePush.maxCooldown;
-            this.ctx.fillStyle = `rgba(255, 0, 204, ${0.3 + cooldownPercent * 0.7})`;
-            this.ctx.fillRect(10, 10, 200 * cooldownPercent, 10);
-            this.ctx.strokeStyle = '#FF00CC';
-            this.ctx.strokeRect(10, 10, 200, 10);
+        // Draw force push indicators
+        // Player 1 special shot indicator
+        if (!this.forcePush.player1Used) {
+            this.ctx.fillStyle = '#00FFFF';
+            this.ctx.font = '12px Orbitron, monospace';
+            this.ctx.textAlign = 'left';
+            this.ctx.fillText('P1: SPACE (Special)', 10, 30);
+        } else {
+            this.ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
+            this.ctx.font = '12px Orbitron, monospace';
+            this.ctx.textAlign = 'left';
+            this.ctx.fillText('P1: Used', 10, 30);
+        }
+        
+        // Player 2 special shot indicator
+        if (!this.forcePush.player2Used) {
+            this.ctx.fillStyle = '#FF00CC';
+            this.ctx.font = '12px Orbitron, monospace';
+            this.ctx.textAlign = 'right';
+            this.ctx.fillText('P2: SHIFT (Special)', this.canvas.width - 10, 30);
+        } else {
+            this.ctx.fillStyle = 'rgba(255, 0, 204, 0.3)';
+            this.ctx.font = '12px Orbitron, monospace';
+            this.ctx.textAlign = 'right';
+            this.ctx.fillText('P2: Used', this.canvas.width - 10, 30);
+        }
+        
+        // Draw speed multiplier indicator
+        if (this.ball.speedMultiplier > 1) {
+            this.ctx.fillStyle = '#FFD700';
+            this.ctx.font = 'bold 14px Orbitron, monospace';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(`Speed: ${Math.round(this.ball.speedMultiplier * 100)}%`, this.canvas.width / 2, 30);
         }
         
         // Draw game state messages

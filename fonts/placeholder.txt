@@ -1,0 +1,27 @@
+# Fonts Folder
+
+This folder should contain custom font files for the website.
+
+## Required Fonts:
+- arcade.ttf - Retro arcade-style font for headings and UI elements
+
+## Optional Fonts:
+- orbitron-regular.woff2 - Modern futuristic font (already loaded from Google Fonts)
+- orbitron-bold.woff2 - Bold variant of Orbitron
+- orbitron-black.woff2 - Black variant of Orbitron
+
+## Font Specifications:
+- Format: TTF, WOFF, or WOFF2
+- License: Ensure fonts are properly licensed for web use
+- Fallbacks: Website includes Google Fonts as fallback
+
+## Current Font Stack:
+The website currently uses Google Fonts (Orbitron) which provides:
+- Regular (400)
+- Bold (700) 
+- Black (900)
+
+## Usage:
+Replace this file with actual font files when available.
+Update the CSS @font-face declarations in style.css to use local fonts.
+This will improve loading performance and provide offline functionality.

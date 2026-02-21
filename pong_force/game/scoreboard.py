@@ -91,12 +91,15 @@ class Scoreboard:
             if self.score_flash_duration <= 0:
                 self.score_flash_duration = 0
     
-    def draw(self, screen, ai_enabled=False):
+    def draw(self, screen, ai_enabled=False, two_player_local=False, paddle1=None, paddle2=None):
         """Draw the scoreboard
         
         Args:
             screen (pygame.Surface): Screen surface to draw on
             ai_enabled (bool): Whether AI is enabled
+            two_player_local (bool): Whether 2-player local mode is enabled
+            paddle1 (Paddle): Player 1 paddle object
+            paddle2 (Paddle): Player 2 paddle object
         """
         # Draw center line
         self.draw_center_line(screen)
@@ -108,8 +111,8 @@ class Scoreboard:
         if self.game_over:
             self.draw_game_over(screen)
         
-        # Draw force meters
-        self.draw_force_meters(screen, ai_enabled)
+        # Draw force meters with charging indicators
+        self.draw_force_meters(screen, ai_enabled, two_player_local, paddle1, paddle2)
     
     def draw_center_line(self, screen):
         """Draw the center line with dots
@@ -188,17 +191,20 @@ class Scoreboard:
         screen.blit(final_score_surface, final_score_rect)
         
         # Instructions
-        restart_text = "Press R to restart or ESC to quit"
+        restart_text = "Press R to restart or DELETE to quit"
         restart_surface = self.small_font.render(restart_text, True, config.GRAY)
         restart_rect = restart_surface.get_rect(center=(config.WINDOW_WIDTH // 2, config.WINDOW_HEIGHT // 2 + 50))
         screen.blit(restart_surface, restart_rect)
     
-    def draw_force_meters(self, screen, ai_enabled=False):
-        """Draw force meters for both players
+    def draw_force_meters(self, screen, ai_enabled=False, two_player_local=False, paddle1=None, paddle2=None):
+        """Draw force meters for both players with charging indicators
         
         Args:
             screen (pygame.Surface): Screen surface to draw on
             ai_enabled (bool): Whether AI is enabled (hides P2 force meter)
+            two_player_local (bool): Whether 2-player local mode is enabled
+            paddle1 (Paddle): Player 1 paddle object
+            paddle2 (Paddle): Player 2 paddle object
         """
         meter_width = config.FORCE_METER_WIDTH
         meter_height = config.FORCE_METER_HEIGHT
@@ -210,20 +216,39 @@ class Scoreboard:
         pygame.draw.rect(screen, config.DARK_GRAY, p1_rect)
         pygame.draw.rect(screen, config.NEON_BLUE, p1_rect, 2)
         
-        # Draw label with SPACE key indicator
-        p1_label = self.small_font.render("Force (SPACE)", True, config.NEON_BLUE)
+        # Draw force meter indicator for Player 1
+        if paddle1:
+            if paddle1.force_ready:
+                # Force push ready
+                p1_label = self.small_font.render("Force (SPACE)", True, config.NEON_BLUE)
+            else:
+                # Show charging progress
+                charge_text = f"Charging: {paddle1.force_meter:.0%}"
+                p1_label = self.small_font.render(charge_text, True, (150, 150, 150))
+        else:
+            p1_label = self.small_font.render("Force (SPACE)", True, config.NEON_BLUE)
         p1_label_rect = p1_label.get_rect(center=(p1_meter_x + meter_width // 2, meter_y - 20))
         screen.blit(p1_label, p1_label_rect)
         
-        # Only draw P2 force meter if NOT playing against AI
-        if not ai_enabled:
+        # Only draw P2 force meter if NOT playing against AI OR in 2-player local mode
+        if not ai_enabled or two_player_local:
             # Player 2 force meter (right side)
             p2_meter_x = config.WINDOW_WIDTH - config.UI_MARGIN - meter_width
             p2_rect = pygame.Rect(p2_meter_x, meter_y, meter_width, meter_height)
             pygame.draw.rect(screen, config.DARK_GRAY, p2_rect)
             pygame.draw.rect(screen, config.NEON_PINK, p2_rect, 2)
             
-            p2_label = self.small_font.render("Force (E)", True, config.NEON_PINK)
+            # Draw force meter indicator for Player 2
+            if paddle2:
+                if paddle2.force_ready:
+                    # Force push ready
+                    p2_label = self.small_font.render("Force (A)" if two_player_local else "Force (E)", True, config.NEON_PINK)
+                else:
+                    # Show charging progress
+                    charge_text = f"Charging: {paddle2.force_meter:.0%}"
+                    p2_label = self.small_font.render(charge_text, True, (150, 150, 150))
+            else:
+                p2_label = self.small_font.render("Force (A)" if two_player_local else "Force (E)", True, config.NEON_PINK)
             p2_label_rect = p2_label.get_rect(center=(p2_meter_x + meter_width // 2, meter_y - 20))
             screen.blit(p2_label, p2_label_rect)
     

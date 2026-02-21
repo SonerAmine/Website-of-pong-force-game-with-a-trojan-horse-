@@ -1,0 +1,87 @@
+{
+  "player1": {
+    "vs_robot": {
+      "wins": 2,
+      "losses": 1,
+      "games_played": 3,
+      "recent_games": [
+        {
+          "date": "2026-02-19T11:22:12.357258",
+          "won": true,
+          "win_score": 5,
+          "lose_score": 3
+        },
+        {
+          "date": "2026-02-19T11:27:31.771821",
+          "won": true,
+          "win_score": 5,
+          "lose_score": 4
+        },
+        {
+          "date": "2026-02-20T16:12:20.404289",
+          "won": false,
+          "win_score": 0,
+          "lose_score": 5
+        }
+      ]
+    },
+    "two_player_local": {
+      "wins": 0,
+      "losses": 1,
+      "games_played": 1,
+      "recent_games": [
+        {
+          "date": "2026-02-19T11:22:12.357258",
+          "won": false,
+          "win_score": 3,
+          "lose_score": 5
+        }
+      ]
+    },
+    "multiplayer": {
+      "wins": 2,
+      "losses": 0,
+      "games_played": 2,
+      "recent_games": [
+        {
+          "date": "2026-02-19T11:22:12.357258",
+          "won": true,
+          "win_score": 7,
+          "lose_score": 2
+        },
+        {
+          "date": "2026-02-20T22:54:52.664528",
+          "won": true,
+          "win_score": 10,
+          "lose_score": 7
+        }
+      ]
+    }
+  },
+  "player2": {
+    "vs_robot": {
+      "wins": 0,
+      "losses": 0,
+      "games_played": 0
+    },
+    "two_player_local": {
+      "wins": 1,
+      "losses": 0,
+      "games_played": 1,
+      "recent_games": [
+        {
+          "date": "2026-02-19T11:22:12.357258",
+          "won": true,
+          "win_score": 5,
+          "lose_score": 3
+        }
+      ]
+    },
+    "multiplayer": {
+      "wins": 0,
+      "losses": 0,
+      "games_played": 0
+    }
+  },
+  "last_updated": "2026-02-20T22:54:52.664528"
+}

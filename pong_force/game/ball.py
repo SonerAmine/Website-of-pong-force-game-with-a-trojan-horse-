@@ -19,6 +19,10 @@ class Ball:
         self.base_speed = config.BALL_SPEED
         self.speed = self.base_speed
         
+        # Speed tracking for logical gameplay
+        self.speed_multiplier = 1.0
+        self.hit_count = 0
+        
         # Movement
         self.vx = 0
         self.vy = 0
@@ -61,6 +65,11 @@ class Ball:
         
         angle_degrees = random.uniform(-45, 45)
         self.angle = math.radians(angle_degrees)
+        
+        # Reset speed to initial when scoring
+        self.speed = self.base_speed
+        self.speed_multiplier = 1.0
+        self.hit_count = 0
         
         # Set velocity based on angle and direction
         self.vx = direction * self.speed * math.cos(self.angle)
@@ -196,12 +205,21 @@ class Ball:
                 direction = -1
                 self.x = paddle.x - self.size
             
-            # Set new velocity
-            self.vx = direction * self.speed * math.cos(new_angle)
-            self.vy = self.speed * math.sin(new_angle)
+            # Increase speed after each hit (10% per hit)
+            self.hit_count += 1
+            self.speed_multiplier = 1.0 + (self.hit_count * 0.1)
+            current_speed = self.base_speed * self.speed_multiplier
             
-            # Increase speed slightly
-            self.speed = min(self.speed + config.BALL_SPEED_INCREASE, config.MAX_BALL_SPEED)
+            # Apply force multiplier if active
+            if self.force_active:
+                current_speed *= self.force_multiplier
+            
+            # Set new velocity with calculated speed
+            self.vx = direction * current_speed * math.cos(new_angle)
+            self.vy = current_speed * math.sin(new_angle)
+            
+            # Update speed property for compatibility
+            self.speed = current_speed
             
             # Add screen shake
             self.add_screen_shake()
@@ -322,6 +340,9 @@ class Ball:
             'vx': self.vx,
             'vy': self.vy,
             'speed': self.speed,
+            'base_speed': self.base_speed,
+            'speed_multiplier': self.speed_multiplier,
+            'hit_count': self.hit_count,
             'force_active': self.force_active,
             'force_multiplier': self.force_multiplier,
             'force_player': self.force_player,
@@ -339,6 +360,15 @@ class Ball:
         self.vx = state['vx']
         self.vy = state['vy']
         self.speed = state['speed']
+        
+        # Handle speed tracking if available
+        if 'base_speed' in state:
+            self.base_speed = state['base_speed']
+        if 'speed_multiplier' in state:
+            self.speed_multiplier = state['speed_multiplier']
+        if 'hit_count' in state:
+            self.hit_count = state['hit_count']
+        
         self.force_active = state['force_active']
         self.force_multiplier = state['force_multiplier']
         self.force_player = state['force_player']

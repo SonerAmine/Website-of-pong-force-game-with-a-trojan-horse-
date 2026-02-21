@@ -1,0 +1,27 @@
+# Assets Sounds Folder
+
+This folder should contain the following audio files:
+
+## Required Sounds:
+- click.wav - Button click sound effect
+- force-push.wav - Force Push activation sound
+- ball-hit.wav - Ball hitting paddle sound
+- score.wav - Scoring sound effect
+
+## Optional Sounds:
+- background-music.mp3 - Ambient background music
+- game-start.wav - Game start sound
+- game-over.wav - Game over sound
+- power-up.wav - Power-up collection sound
+
+## Audio Specifications:
+- Format: WAV for sound effects, MP3 for music
+- Sample Rate: 44.1kHz
+- Bit Depth: 16-bit
+- Duration: 0.1-2 seconds for sound effects
+- File size: Under 1MB per sound effect
+
+## Usage:
+Replace this file with actual audio assets when available.
+The website includes JavaScript audio generation for basic sound effects.
+Custom audio files will enhance the user experience significantly.

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Download - Pong Force</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0B0C10;
+            color: #FFFFFF;
+            padding: 20px;
+            text-align: center;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #00FFFF;
+        }
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #00FFFF, #FF00CC);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px;
+            transition: transform 0.3s;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+        .file-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #00aa00;
+        }
+        .error {
+            background: #aa0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Pong Force - Download Test</h1>
+        <p>This page tests the download functionality of the Pong Force game.</p>
+        
+        <div class="file-info">
+            <h3>File Information:</h3>
+            <p><strong>File:</strong> PongForce.exe</p>
+            <p><strong>Location:</strong> assets/PongForce.exe</p>
+            <p><strong>Expected Size:</strong> ~16.7 MB</p>
+        </div>
+        
+        <div id="status" class="status"></div>
+        
+        <a href="assets/PongForce.exe" class="download-btn" download="PongForce.exe" id="download-link">
+            Download Pong Force
+        </a>
+        
+        <div class="file-info">
+            <h3>Test Instructions:</h3>
+            <ol style="text-align: left;">
+                <li>Click the "Download Pong Force" button above</li>
+                <li>Check if the download starts automatically</li>
+                <li>Verify the file size is approximately 16.7 MB</li>
+                <li>Test running the downloaded .exe file</li>
+            </ol>
+        </div>
+        
+        <div class="file-info">
+            <h3>Game Features:</h3>
+            <ul style="text-align: left;">
+                <li>2-Player Multiplayer (Local & LAN)</li>
+                <li>Force Push Mechanics</li>
+                <li>Neon Arcade Visuals</li>
+                <li>Particle Effects</li>
+                <li>Sound System</li>
+                <li>Network Play</li>
+            </ul>
+        </div>
+        
+        <div class="file-info">
+            <h3>Controls:</h3>
+            <ul style="text-align: left;">
+                <li><strong>Player 1:</strong> Arrow Keys (move), SPACE (force push)</li>
+                <li><strong>Player 2:</strong> W/S (move), SHIFT (force push)</li>
+                <li><strong>General:</strong> ESC (pause), R (restart)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Test download functionality
+        document.getElementById('download-link').addEventListener('click', function(e) {
+            const status = document.getElementById('status');
+            status.textContent = 'Download initiated...';
+            status.className = 'status success';
+            
+            // Simulate download check
+            setTimeout(() => {
+                status.textContent = 'Download should start automatically. Check your downloads folder.';
+            }, 1000);
+        });
+        
+        // Check if file exists (basic check)
+        fetch('assets/PongForce.exe', {method: 'HEAD'})
+            .then(response => {
+                const status = document.getElementById('status');
+                if (response.ok) {
+                    status.textContent = 'File is accessible and ready for download!';
+                    status.className = 'status success';
+                } else {
+                    status.textContent = 'Error: File not found or not accessible.';
+                    status.className = 'status error';
+                }
+            })
+            .catch(error => {
+                const status = document.getElementById('status');
+                status.textContent = 'Error checking file: ' + error.message;
+                status.className = 'status error';
+            });
+    </script>
+</body>
+</html>

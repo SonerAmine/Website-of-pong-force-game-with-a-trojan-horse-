@@ -1,0 +1,25 @@
+# Assets Images Folder
+
+This folder should contain the following image files:
+
+## Required Images:
+- logo.png - Main Pong Force logo
+- screenshot1.png - Gameplay screenshot showing normal play
+- screenshot2.png - Screenshot showing Force Push in action
+- screenshot3.png - Multiplayer battle screenshot
+- favicon.ico - Website favicon
+
+## Optional Images:
+- hero-bg.jpg - Background image for hero section
+- feature-icons/ - Folder with individual feature icons
+- social-icons/ - Folder with social media icons
+
+## Image Specifications:
+- Logo: 200x200px, PNG with transparency
+- Screenshots: 1920x1080px, PNG or JPG
+- Favicon: 32x32px, ICO format
+- Icons: 64x64px, PNG with transparency
+
+## Usage:
+Replace this file with actual image assets when available.
+The website will work without these images, but they enhance the visual experience.

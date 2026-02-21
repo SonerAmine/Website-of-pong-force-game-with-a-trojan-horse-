@@ -24,8 +24,8 @@ class Paddle:
         self.speed = config.PADDLE_SPEED
         
         # Force push system
-        self.force_meter = 1.0  # 0.0 to 1.0 - Commence PLEINE
-        self.force_ready = True  # Prête dès le début
+        self.force_meter = 0.0  # 0.0 to 1.0 - Starts empty, charges over 75 seconds
+        self.force_ready = False  # Not ready until meter is full
         self.force_cooldown = 0  # Cooldown timer in seconds
         self.last_force_time = 0
         self.stunned = False
@@ -122,28 +122,27 @@ class Paddle:
         self.y = new_y
     
     def update_force_meter(self, dt):
-        """Update force push meter"""
+        """Update force push meter - charges over 75 seconds"""
         current_time = pygame.time.get_ticks() / 1000.0
         
-        # Update cooldown - diminue chaque frame
+        # If not ready, charge the meter
+        if not self.force_ready:
+            self.force_meter += config.FORCE_METER_FILL_RATE * dt
+            if self.force_meter >= 1.0:
+                self.force_meter = 1.0
+                self.force_ready = True
+                self.target_glow = 1.0
+                print(f"✅ Force READY for Player {self.player_id}!")
+        
+        # Update cooldown after using force push
         if self.force_cooldown > 0:
             self.force_cooldown -= dt
             if self.force_cooldown <= 0:
                 self.force_cooldown = 0
-                self.force_ready = True
-                self.force_meter = 1.0
-                self.target_glow = 1.0
-                print(f"✅ Force READY pour joueur {self.player_id}!")
-        
-        # Update meter visual based on cooldown
-        if self.force_cooldown > 0:
-            # Barre se remplit progressivement pendant le cooldown
-            self.force_meter = 1.0 - (self.force_cooldown / config.FORCE_COOLDOWN)
-        elif not self.force_ready:
-            # Si pas en cooldown mais pas prête, remplir rapidement
-            self.force_meter = 1.0
-            self.force_ready = True
-            self.target_glow = 1.0
+                # Start charging again after cooldown
+                self.force_meter = 0.0
+                self.force_ready = False
+                self.target_glow = 0.0
     
     def update_visual_effects(self, dt):
         """Update visual effects"""
@@ -170,7 +169,7 @@ class Paddle:
         self.moving_down = False
     
     def try_force_push(self, ball):
-        """Attempt to use force push - VERSION SIMPLIFIÉE QUI FONCTIONNE TOUJOURS
+        """Attempt to use force push - requires full meter
         
         Args:
             ball (Ball): The game ball
@@ -178,8 +177,15 @@ class Paddle:
         Returns:
             bool: True if force push was successful
         """
-        # FORCE PUSH FONCTIONNE TOUJOURS - pas de vérification !
-        print(f"🚀 FORCE PUSH ACTIVÉE ! Joueur {self.player_id}")
+        current_time = pygame.time.get_ticks() / 1000.0
+        
+        # Check if force meter is full
+        if not self.force_ready:
+            print(f"❌ Force meter not ready for Player {self.player_id}: {self.force_meter:.0%} charged")
+            return False
+        
+        # Force push available - use it
+        print(f"🚀 FORCE PUSH ACTIVATED! Player {self.player_id}")
         self.activate_force_push(ball)
         return True
     
@@ -191,8 +197,17 @@ class Paddle:
         """
         current_time = pygame.time.get_ticks() / 1000.0
         
-        print(f"⚡ Activation de la Force pour joueur {self.player_id}")
-        print(f"   Position balle avant: vx={ball.vx}, vy={ball.vy}")
+        print(f"⚡ Force Push ACTIVATED! Player {self.player_id}")
+        print(f"   Ball position before: vx={ball.vx}, vy={ball.vy}")
+        
+        # Apply force push to ball (2.5x speed increase)
+        ball.apply_force_push(self.player_id)
+        
+        # Reset meter and start cooldown
+        self.force_meter = 0.0
+        self.force_ready = False
+        self.force_cooldown = config.FORCE_COOLDOWN
+        self.target_glow = 0.0
         
         # Start dash animation
         self.is_dashing = True
@@ -204,14 +219,14 @@ class Paddle:
         else:  # Right paddle moves left
             self.dash_target_x = self.original_x - config.FORCE_DASH_DISTANCE
         
-        print(f"   Dash de {self.original_x} vers {self.dash_target_x}")
+        print(f"   Dash from {self.original_x} to {self.dash_target_x}")
         
-        # Apply force to ball - TRÈS IMPORTANT
+        # Apply force to ball - VERY IMPORTANT
         ball.apply_force_push(self.player_id)
         
-        print(f"   Position balle après: vx={ball.vx}, vy={ball.vy}")
+        print(f"   Ball position after: vx={ball.vx}, vy={ball.vy}")
         
-        # Reset force meter APRÈS l'activation
+        # Reset force meter AFTER activation
         self.force_meter = 0.0
         self.force_ready = False
         self.force_cooldown = config.FORCE_COOLDOWN

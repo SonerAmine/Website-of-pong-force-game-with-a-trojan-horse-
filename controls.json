@@ -1,0 +1,36 @@
+{
+  "player1": {
+    "multiplayer": {
+      "up": "z",
+      "down": "s",
+      "force": "space"
+    },
+    "vs_robot": {
+      "up": "z",
+      "down": "s",
+      "force": "space"
+    },
+    "two_player_local": {
+      "up": "z",
+      "down": "s",
+      "force": "space"
+    }
+  },
+  "player2": {
+    "multiplayer": {
+      "up": "w",
+      "down": "s",
+      "force": "shift"
+    },
+    "vs_robot": {
+      "up": "w",
+      "down": "s",
+      "force": "shift"
+    },
+    "two_player_local": {
+      "up": "up",
+      "down": "down",
+      "force": "shift"
+    }
+  }
+}
